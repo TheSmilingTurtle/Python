@@ -68,10 +68,10 @@ if args.useproxy:
     # and monkey patches socket.socket to connect over
     # the proxy by default
     try:
-        import socks
+        import socket
 
-        socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, args.proxy_host, args.proxy_port)
-        socket.socket = socks.socksocket
+        socket.setdefaultproxy(socket.PROXY_TYPE_SOCKS5, args.proxy_host, args.proxy_port)
+        socket.socket = socket.socksocket
         logging.info("Using SOCKS5 proxy for connecting...")
     except ImportError:
         logging.error("Socks Proxy Library Not Available!")

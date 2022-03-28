@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import random
 import math
-import vector as vec
+import modules.vector as vec
 
 class dot:
     def __init__(self, x, y):

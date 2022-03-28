@@ -29,4 +29,4 @@ def load(filename="toDo.json"):
 
 #cpuTemps = load("cpuTemps.json").append(cpu)
 
-print(sensors_temperatures())
+print(wmi.sensors_temperatures())
