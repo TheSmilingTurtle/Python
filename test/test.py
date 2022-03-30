@@ -1,10 +1,11 @@
-from xml.dom import minidom, xmlbuilder
-from xml.sax import xmlreader
+import csv
 
-reader = xmlreader
+l = [[j+i+i*j for j in range(3)] for i in range(100)]
 
-builder  = xmlbuilder
+with open("test/Test.csv", "w", newline="") as file:
+    writer = csv.writer(file, delimiter=";")
 
-mini = minidom
+    for i in range(100):
+        writer.writerow(l[i])
 
-doc = mini.parse("test\\test.xml")
+file.close()
