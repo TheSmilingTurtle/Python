@@ -1,8 +1,9 @@
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
 
+
 class bezier:
-    def __init__(self, type, *args, style = "none") -> None:
+    def __init__(self, type, *args, style="none") -> None:
         self.type = type.lower()
         self.style = style
         self.path_type = mpath.Path
@@ -17,9 +18,9 @@ class bezier:
         self.path = mpatches.PathPatch(
             [self.points],
             types,
-            fc = self.style
+            fc=self.style
         )
-    
+
     @property
     def path(self) -> mpatches.PathPatch:
         return self.path
