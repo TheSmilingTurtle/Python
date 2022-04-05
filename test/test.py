@@ -1,19 +1,14 @@
-import csv
-import math
-import random
-import time
+import matplotlib.pyplot as plt
+import bezier
 
-length = 100
-init_time = time.time()
+curve = bezier.bezier("c", [(0, 0), (0, 1), (1, 1)])
 
-l = [[-math.cos(i*math.pi/25), -math.sin(i*math.pi/25), 1-2*random.random()] for i in range(length)]
+print(curve.points)
 
-with open("test/Test.csv", "w+", newline="") as file:
-    writer = csv.writer(file, delimiter=";")
+curve.build_path()
 
-    for i in range(length):
-        OUTLIST = ["", time.time()-init_time]+l[i]
-        writer.writerow(OUTLIST)
-        time.sleep(0.01)
+ax = plt.subplot()
 
-file.close()
+ax.add_patch(curve.get_path)
+
+plt.show()
