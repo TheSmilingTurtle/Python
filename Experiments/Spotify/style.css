@@ -1,0 +1,31 @@
+body {
+    background-color: #191C21;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+h1 {
+    font-family: Arial; /*//TODO: If the text is too long, scroll it*/
+    color: #ABB2BF;
+}
+
+h2 {
+    font-family: Helvetica;
+    color: #838891;
+}
+
+#img-div {
+    display: inline-block;
+    max-width: 120px; /*//TODO: make adjustable to window, along with text*/
+    max-height: 120px;
+    object-fit: contain;
+    margin-right: 10px;
+}
+
+#tracks {
+    vertical-align: top;
+    display: inline-block;
+}
