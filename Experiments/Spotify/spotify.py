@@ -1,6 +1,5 @@
 import time
 import spotipy
-from pprint import pprint
 
 html = """
 <!DOCTYPE html>
@@ -37,7 +36,7 @@ if current_track:
         file.write(message)
         file.close() 
 
-    pprint(track)
+    print(track)
 
 while True:
     time.sleep(0.1)
@@ -54,4 +53,4 @@ while True:
                 file.write(message)
             file.close()
 
-            pprint(track)
+            print(track)

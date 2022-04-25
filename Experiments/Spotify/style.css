@@ -28,4 +28,5 @@ h2 {
 #tracks {
     vertical-align: top;
     display: inline-block;
+    overflow-wrap: break-word;
 }
