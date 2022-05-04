@@ -3,7 +3,8 @@ from svg.path.path import *
 from xml.dom import minidom
 from pprint import pprint
 
-SCALING = 5
+pa = input("Input path: ")
+SCALING = float(input("Input scaling: "))
 
 init = """#include <PlotterV3.h>
 #include <Servo.h>
@@ -56,49 +57,58 @@ cubic_bezier_template = "\tplot.bezier_c(%d, %d, %d, %d, %d, %d);\n"
 quadratic_bezier_template = "\tplot.bezier_c(%d, %d, %d, %d);\n"
 
 # read the SVG file
-doc = minidom.parse('svg_test/ETH_Zurich_Logo_black_1.svg')
+doc = minidom.parse(pa)
+
 path_strings = [path.getAttribute('d') for path
-                in doc.getElementsByTagName('path')]
+                in doc.getElementsByTagName('path')] #try getting it by the path tag
+
 if not path_strings:
     path_strings = [path.getAttribute('d') for path
-                in doc.getElementsByTagName('svg:path')]
+                in doc.getElementsByTagName('svg:path')] #try getting it by the svg:path tag
 
 doc.unlink()
 
 with open("svg_test/generated_ino.ino", "w") as ino:
-    ino.write(init)
+    ino.write(init) #initialise the file
     
     for path_string in path_strings:
-        p = parse_path(path_string)
-        #pprint(p)
+        p = parse_path(path_string) #parser go brrrr
+
         for e in p:
-            pprint(e)
             if isinstance(e, Move):
-                ino.write(move_template % ( (e.end.real-x)*SCALING, (e.end.imag-y)*SCALING ))
-                x = e.end.real*SCALING
-                y = e.end.imag*SCALING
+                #move to a given position
+                ino.write(move_template % ( round((e.end.real-x)*SCALING), round((e.end.imag-y)*SCALING) ))
+
             elif isinstance(e, Line):
-                ino.write(line_template % ( (e.end.real-e.start.real)*SCALING, (e.end.imag-e.start.imag)*SCALING ))
-                x = e.end.real*SCALING
-                y = e.end.imag*SCALING
+                #from absolute to relative, ende minus anfang
+                ino.write(line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )) )
+
             elif isinstance(e, CubicBezier):
-                ino.write(cubic_bezier_template % ( e.control1.real*SCALING, e.control1.imag*SCALING, e.control2.real*SCALING, e.control2.imag*SCALING, e.end.real*SCALING, e.end.imag*SCALING))
-                x = e.end.real*SCALING
-                y = e.end.imag*SCALING
+                #cubic bezier
+                ino.write(cubic_bezier_template % ( round(e.control1.real*SCALING), round(e.control1.imag*SCALING), round(e.control2.real*SCALING), round(e.control2.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING)) )
+
             elif isinstance(e, QuadraticBezier):
-                ino.write(quadratic_bezier_template % (e.control.real*SCALING, e.control.imag*SCALING, e.end.real*SCALING, e.end.imag*SCALING))
-                x = e.end.real*SCALING
-                y = e.end.imag*SCALING
+                #quadratic bezier
+                ino.write(quadratic_bezier_template % (round(e.control.real*SCALING ), round(e.control.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING)))
+
             elif isinstance(e, Close):
-                ino.write(line_template % ( (e.end.real-e.start.real)*SCALING, (e.end.imag-e.start.imag)*SCALING ))
+                #Closing the shape
+                ino.write(line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
+
                 ino.write("\tup();\n")
-                x = e.end.real*SCALING
-                y = e.end.imag*SCALING
 
+                break
             else: 
-                pprint("unknown instance:")
-                pprint(e)
-    
-    ino.write(conc)
+                #linearly approximate everything you do not know
+                ino.write(line_template % ( round((e.end.real-x)*SCALING), round((e.end.imag-x)*SCALING )))
 
-print("\ndone")
+                pprint("Unknown instance:")
+                pprint(e)
+            
+            #update coords
+            x = e.end.real*SCALING
+            y = e.end.imag*SCALING
+    
+    ino.write(conc) #finalise the file
+
+print("\ndone") #heureca
