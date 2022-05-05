@@ -22,7 +22,7 @@ curve.build_path()
 
 ax.add_patch(curve.get_path)
 
-plt.xlim(-300, 600)
-plt.ylim(-300, 600)
+plt.xlim(-100, 300)
+plt.ylim(-100, 300)
 
 plt.show()
