@@ -10,17 +10,23 @@ img {
 h1 {
     font-family: Arial; /*//TODO: If the text is too long, scroll it*/
     color: #ABB2BF;
+    font-size: 14px;
+    position: relative;
+    top: -4px;
 }
 
 h2 {
     font-family: Helvetica;
     color: #838891;
+    font-size: 12px;
+    position: relative;
+    bottom: 5px;
 }
 
 #img-div {
     display: inline-block;
-    max-width: 120px; /*//TODO: make adjustable to window, along with text*/
-    max-height: 120px;
+    max-width: 50px; /*//TODO: make adjustable to window, along with text*/
+    max-height: 50px;
     object-fit: contain;
     margin-right: 10px;
 }

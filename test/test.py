@@ -1,28 +1,68 @@
-import matplotlib.pyplot as plt
-import bezier
+import random
+from pprint import pprint
 
-ax = plt.subplot()
-curve = bezier.bezier("", [(0,0)])
-curve.get_types()
+x = 0
+y = 0
 
-with open("test\\nic_coords.txt") as file:
-    for line in file:
-        uncleaned = line.strip().split(" ")
-        if uncleaned[-1] == ",":
-            uncleaned.pop()
-        cleaned = [float(x.replace(",", "").strip()) for x in uncleaned[1:]]
-        paired = [(x, y) for x, y in zip(cleaned, cleaned[1::2])]
-        temp = bezier.bezier(uncleaned[0].strip(), paired)
-        temp.get_types()
-        curve.add(temp)
+init = r"""#include <PlotterV3.h>
+#define a 1
 
-print(curve.types)
+Plt plot = Plt();
 
-curve.build_path()
+void setup()
+{
+    servo.attach(4);
+"""
 
-ax.add_patch(curve.get_path)
+sassy_comments = ["im chaotic", "have you heard of the colour green?", "ma mate Dave", "Oh, this ones great"]
 
-plt.xlim(-100, 300)
-plt.ylim(-100, 300)
+with open("test\\nic_coords.txt", "r") as file:
+    with open("test\\generated_ino.ino", "w") as ino:
+        ino.write(init);
+        for line in file:
+            rand = random.random()
 
-plt.show()
+            info = [x.strip() for x in line.split(",")]
+
+            start = info.pop(0).lower()
+
+            values = [round(float(x)) for x in info if x != ""]
+
+            ino.write("\tdelay(500);\n")
+
+            if start == "l" or start == "h":
+                ino.write("\tplot.draw_line({}*a, {}*a);\n".format(values[0]-x, values[1]-y))
+
+                x = values[0]
+                y = values[1]
+
+            elif start == "c":
+                values.pop(0)
+                values.pop(0)
+
+                ino.write("\tplot.bezier_c({});\n".format(", ".join([str(x)+"*a" for x in values])))
+
+                x = values[4]
+                y = values[5]
+            
+            elif start == "m":
+                ino.write("""\tup();
+    plot.draw_line({}*a, {}*a);
+    down();
+""".format(values[0]-x, values[1]-y))
+
+                x = values[0]
+                y = values[1]
+            
+            elif start == "z":
+                ino.write("\tup();\n")
+            
+        ino.write("""
+    up();
+}
+
+void loop()
+{"""+"""
+    //{}""".format(random.choice(sassy_comments))+"""
+}""" \
+                );
