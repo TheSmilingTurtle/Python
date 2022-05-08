@@ -73,11 +73,13 @@ move_template = """
     down();
 """
 
-line_template = "\tdelay(200);\n\tplot.draw_line(%d, %d);\n"
+delay_template = "\tdelay(200);\n"
 
-cubic_bezier_template = "\tdelay(200);\n\tplot.bezier_c(%d, %d, %d, %d, %d, %d);\n"
+line_template = "\tplot.draw_line(%d, %d);\n"
 
-quadratic_bezier_template = "\tdelay(200);\n\tplot.bezier_q(%d, %d, %d, %d);\n"
+cubic_bezier_template = "\tplot.bezier_c(%d, %d, %d, %d, %d, %d);\n"
+
+quadratic_bezier_template = "\tplot.bezier_q(%d, %d, %d, %d);\n"
 
 
 print("Converting to path")
@@ -131,27 +133,25 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
 
             elif isinstance(e, Line):
                 #from absolute to relative, ende minus anfang
-                ino.write(line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )) )
+                ino.write(delay_template + line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )) )
 
             elif isinstance(e, CubicBezier):
                 #cubic bezier
-                ino.write(cubic_bezier_template % ( round(e.control1.real*SCALING), round(e.control1.imag*SCALING), round(e.control2.real*SCALING), round(e.control2.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING)) )
+                ino.write(delay_template + cubic_bezier_template % ( round(e.control1.real*SCALING), round(e.control1.imag*SCALING), round(e.control2.real*SCALING), round(e.control2.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING)) )
 
             elif isinstance(e, QuadraticBezier):
                 #quadratic bezier
-                ino.write(quadratic_bezier_template % (round(e.control.real*SCALING ), round(e.control.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING) ) )
+                ino.write(delay_template + quadratic_bezier_template % (round(e.control.real*SCALING ), round(e.control.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING) ) )
 
             elif isinstance(e, Close):
                 #Closing the shape
-                ino.write(line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
+                ino.write(delay_template + line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
 
                 ino.write("\tup();\n")
 
-                print(e)
-
             else: 
                 #linearly approximate everything you do not know
-                ino.write(line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
+                ino.write(delay_template + line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
 
                 print("Unknown instance:")
                 print(e)
