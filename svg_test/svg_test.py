@@ -35,7 +35,7 @@ int agl = 170;
 
 void down()
 {
-    for (; agl <= 170; ++agl)
+    for (; agl <= 160; ++agl)
     {
     servo.write(agl);
     delay(15);
@@ -46,7 +46,7 @@ void down()
 
 void up()
 {
-    for (; agl >= 120; --agl)
+    for (; agl >= 135; --agl)
     {
     servo.write(agl);
     delay(15);
@@ -57,7 +57,7 @@ void up()
 
 void setup()
 {
-    servo.attach(4);
+    servo.attach(_SERVO);
 
     up();
 """
@@ -66,20 +66,18 @@ conc = """}
 
 void loop() {}"""
 
-x = 0
-y = 0
-
 move_template = """
     up();
-    plot.drawline(%d, %d);
+    delay(200);
+    plot.draw_line(%d, %d);
     down();
 """
 
-line_template = "\tplot.draw_line(%d, %d);\n"
+line_template = "\tdelay(200);\n\tplot.draw_line(%d, %d);\n"
 
-cubic_bezier_template = "\tplot.bezier_c(%d, %d, %d, %d, %d, %d);\n"
+cubic_bezier_template = "\tdelay(200);\n\tplot.bezier_c(%d, %d, %d, %d, %d, %d);\n"
 
-quadratic_bezier_template = "\tplot.bezier_c(%d, %d, %d, %d);\n"
+quadratic_bezier_template = "\tdelay(200);\n\tplot.bezier_q(%d, %d, %d, %d);\n"
 
 
 print("Converting to path")
@@ -103,11 +101,15 @@ if not path_strings:
                 in doc.getElementsByTagName('svg:path')] #try getting it by the svg:path tag
 
 if not path_strings:
-    print("Fatal error, no path found")
+    print("Fatal error, no path found in svg")
     quit()
+
 print("Path found")
 print("Closing file\n")
 doc.unlink()
+
+x = 0
+y = 0
 
 print("Generating .ino file")
 with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
@@ -121,6 +123,7 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
         p = parse_path(path_string) #parser go brrrr
 
         for e in tqdm(p):
+
             sleep(0.001)
             if isinstance(e, Move):
                 #move to a given position
@@ -136,7 +139,7 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
 
             elif isinstance(e, QuadraticBezier):
                 #quadratic bezier
-                ino.write(quadratic_bezier_template % (round(e.control.real*SCALING ), round(e.control.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING)))
+                ino.write(quadratic_bezier_template % (round(e.control.real*SCALING ), round(e.control.imag*SCALING), round(e.end.real*SCALING), round(e.end.imag*SCALING) ) )
 
             elif isinstance(e, Close):
                 #Closing the shape
@@ -144,17 +147,18 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
 
                 ino.write("\tup();\n")
 
-                #break
+                print(e)
+
             else: 
                 #linearly approximate everything you do not know
-                ino.write(line_template % ( round((e.end.real-x)*SCALING), round((e.end.imag-x)*SCALING )))
+                ino.write(line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
 
                 print("Unknown instance:")
                 print(e)
             
             #update coords
-            x = e.end.real*SCALING
-            y = e.end.imag*SCALING
+            x = e.end.real
+            y = e.end.imag
         
         sleep(0.3)
     
