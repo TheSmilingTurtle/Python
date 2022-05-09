@@ -41,7 +41,7 @@ void down()
     delay(15);
    }
 
-   delay(200)
+   delay(200);
 }
 
 void up()
@@ -52,7 +52,7 @@ void up()
     delay(15);
     }
 
-    delay(200)
+    delay(200);
 }
 
 void setup()
@@ -60,6 +60,8 @@ void setup()
     servo.attach(_SERVO);
 
     up();
+    plot.calibrate();
+    
 """
 
 conc = """}
@@ -83,7 +85,7 @@ quadratic_bezier_template = "\tplot.bezier_q(%d, %d, %d, %d);\n"
 
 
 print("Converting to path")
-system('inkscape -g --verb="EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;ObjectRemoveTransform;EditSelectAll;SelectionGroup" --batch-process --export-text-to-path --export-plain-svg --export-filename={}\\out.svg '.format(getcwd()) + getcwd() + "\\" + pa)
+system('inkscape -g --verb="EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;ObjectRemoveTransform;EditSelectAll;SelectionGroup;EditSelectAll;ObjectFlipVertically" --batch-process --export-text-to-path --export-plain-svg --export-filename={}\\out.svg '.format(getcwd()) + getcwd() + "\\" + pa)
 print("Done converting\n")
 sleep(1)
 
