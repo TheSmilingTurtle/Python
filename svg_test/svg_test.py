@@ -1,3 +1,4 @@
+from re import S
 from svg.path import parse_path
 from svg.path.path import *
 from xml.dom import minidom
@@ -25,7 +26,7 @@ SCALING = s
 
 del s
 
-init = """#include <PlotterV3.h>
+init = """#include <PlotterV4.h>
 #include <Servo.h>
 
 Plt plot = Plt();
@@ -38,25 +39,31 @@ void down()
     for (; agl <= 160; ++agl)
     {
     servo.write(agl);
-    delay(15);
-   }
+    delayMicroseconds(1500);
+    }
 
-   delay(200);
+    delayMicroseconds(10000);
 }
 
 void up()
 {
-    for (; agl >= 135; --agl)
+    for (; agl >= 130; --agl)
     {
     servo.write(agl);
-    delay(15);
+    delayMicroseconds(1500);
     }
 
-    delay(200);
+    delayMicroseconds(10000);
+}
+
+void print_pos()
+{
+    Serial.print(plot.pos_x()); Serial.print(", "); Serial.println(plot.pos_y());
 }
 
 void setup()
 {
+    Serial.begin(9600);
     servo.attach(_SERVO);
 
     up();
@@ -70,12 +77,12 @@ void loop() {}"""
 
 move_template = """
     up();
-    delay(200);
+    delay(100);
     plot.draw_line(%d, %d);
     down();
 """
 
-delay_template = "\tdelay(200);\n"
+delay_template = "\tdelay(100);\n"
 
 line_template = "\tplot.draw_line(%d, %d);\n"
 
@@ -84,16 +91,15 @@ cubic_bezier_template = "\tplot.bezier_c(%d, %d, %d, %d, %d, %d);\n"
 quadratic_bezier_template = "\tplot.bezier_q(%d, %d, %d, %d);\n"
 
 
-print("Converting to path")
-system('inkscape -g --verb="EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;ObjectRemoveTransform;EditSelectAll;SelectionGroup;EditSelectAll;ObjectFlipVertically" --batch-process --export-text-to-path --export-plain-svg --export-filename={}\\out.svg '.format(getcwd()) + getcwd() + "\\" + pa)
+print("\nConverting to path")
+system('inkscape -g --verb="EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;ObjectRemoveTransform;EditSelectAll;SelectionGroup" --batch-process --export-text-to-path --export-plain-svg --export-filename={}\\out.svg '.format(getcwd()) + getcwd() + "\\" + pa)
 print("Done converting\n")
-sleep(1)
-
+#sleep(1)
 print("Fetching path")
 # read the SVG file
-doc = minidom.parse(getcwd() + "\\" 'out.svg')
+doc = minidom.parse(getcwd() + "\\out.svg")
 
-sleep(0.4)
+#sleep(0.4)
 print("Trying with <path>")
 path_strings = [path.getAttribute('d') for path
                 in doc.getElementsByTagName('path')] #try getting it by the path tag
@@ -121,14 +127,14 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
     ino.write(init) #initialise the file
     
     print("Generating code")
-    sleep(0.8)
+    #sleep(0.8)
 
     for path_string in path_strings:
         p = parse_path(path_string) #parser go brrrr
 
         for e in tqdm(p):
 
-            sleep(0.001)
+            #sleep(0.001)
             if isinstance(e, Move):
                 #move to a given position
                 ino.write(move_template % ( round((e.end.real-x)*SCALING), round((e.end.imag-y)*SCALING) ))
@@ -149,8 +155,6 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
                 #Closing the shape
                 ino.write(delay_template + line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
 
-                ino.write("\tup();\n")
-
             else: 
                 #linearly approximate everything you do not know
                 ino.write(delay_template + line_template % ( round((e.end.real-e.start.real)*SCALING), round((e.end.imag-e.start.imag)*SCALING )))
@@ -161,8 +165,8 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
             #update coords
             x = e.end.real
             y = e.end.imag
-        
-        sleep(0.3)
+
+        #sleep(0.3)
     
     print("Finalising file")
     ino.write(conc) #finalise the file
