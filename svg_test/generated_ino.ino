@@ -11,31 +11,25 @@ void down()
     for (; agl <= 160; ++agl)
     {
     servo.write(agl);
-    delayMicroseconds(1500);
+    delay(15);
     }
 
-    delayMicroseconds(10000);
+    delay(100);
 }
 
 void up()
 {
-    for (; agl >= 130; --agl)
+    for (; agl >= 140; --agl)
     {
     servo.write(agl);
-    delayMicroseconds(1500);
+    delay(15);
     }
 
-    delayMicroseconds(10000);
-}
-
-void print_pos()
-{
-    Serial.print(plot.pos_x()); Serial.print(", "); Serial.println(plot.pos_y());
+    delay(100);
 }
 
 void setup()
 {
-    Serial.begin(9600);
     servo.attach(_SERVO);
 
     up();
@@ -44,234 +38,63 @@ void setup()
 
     up();
     delay(100);
-    plot.draw_line(1545, 937);
+    plot.draw_line(124, 547);
     down();
 	delay(100);
-	plot.draw_line(116, 0);
+	plot.draw_line(61, 0);
 	delay(100);
-	plot.draw_line(0, 129);
+	plot.bezier_c(182, 510, 170, 450, 131, 379);
 	delay(100);
-	plot.bezier_q(1713, 990, 1771, 953);
+	plot.bezier_c(87, 299, 85, 219, 124, 153);
 	delay(100);
-	plot.bezier_q(1829, 914, 1891, 914);
+	plot.bezier_c(167, 82, 253, 37, 345, 38);
 	delay(100);
-	plot.bezier_q(1939, 914, 1992, 944);
+	plot.draw_line(1, 0);
 	delay(100);
-	plot.draw_line(-59, 96);
+	plot.bezier_c(438, 37, 525, 82, 568, 153);
 	delay(100);
-	plot.bezier_q(1897, 1025, 1873, 1025);
+	plot.bezier_c(607, 219, 604, 299, 560, 379);
 	delay(100);
-	plot.bezier_q(1816, 1025, 1763, 1072);
+	plot.bezier_c(521, 450, 510, 510, 507, 548);
 	delay(100);
-	plot.bezier_q(1710, 1119, 1682, 1217);
+	plot.draw_line(62, 0);
 	delay(100);
-	plot.bezier_q(1661, 1293, 1661, 1523);
+	plot.draw_line(28, -61);
 	delay(100);
-	plot.draw_line(0, 299);
+	plot.draw_line(95, 44);
 	delay(100);
-	plot.draw_line(-116, 0);
+	plot.draw_line(-56, 122);
 	delay(100);
-	plot.draw_line(0, -885);
-
-    up();
-    delay(100);
-    plot.draw_line(399, -115);
-    down();
+	plot.draw_line(-224, 2);
 	delay(100);
-	plot.draw_line(53, 0);
+	plot.draw_line(-8, -44);
 	delay(100);
-	plot.draw_line(18, -49);
+	plot.bezier_c(403, 605, 383, 484, 468, 329);
 	delay(100);
-	plot.bezier_c(2031, 769, 2046, 764, 2060, 755);
+	plot.bezier_c(494, 281, 498, 240, 478, 207);
+	delay(100);
+	plot.bezier_c(455, 169, 401, 143, 347, 143);
 	delay(100);
 	plot.draw_line(0, 0);
 	delay(100);
-	plot.draw_line(48, 23);
+	plot.draw_line(-3, 0);
 	delay(100);
-	plot.draw_line(37, -38);
+	plot.bezier_c(291, 143, 237, 169, 214, 207);
 	delay(100);
-	plot.draw_line(-23, -48);
+	plot.bezier_c(194, 240, 197, 281, 223, 329);
 	delay(100);
-	plot.draw_line(0, 0);
+	plot.bezier_c(309, 484, 289, 605, 288, 610);
 	delay(100);
-	plot.bezier_c(2131, 679, 2136, 664, 2140, 647);
+	plot.draw_line(-8, 44);
 	delay(100);
-	plot.draw_line(49, -18);
+	plot.draw_line(-224, -2);
 	delay(100);
-	plot.draw_line(0, -54);
+	plot.draw_line(-56, -122);
 	delay(100);
-	plot.draw_line(-49, -18);
+	plot.draw_line(95, -44);
 	delay(100);
-	plot.bezier_c(2136, 542, 2130, 526, 2122, 512);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.draw_line(23, -48);
-	delay(100);
-	plot.draw_line(-37, -38);
-	delay(100);
-	plot.draw_line(-48, 23);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.bezier_c(2046, 441, 2031, 432, 2014, 428);
-	delay(100);
-	plot.draw_line(-18, -52);
-	delay(100);
-	plot.draw_line(-53, 0);
-	delay(100);
-	plot.draw_line(-18, 52);
-	delay(100);
-	plot.bezier_c(1910, 432, 1895, 440, 1881, 448);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.draw_line(-48, -23);
-	delay(100);
-	plot.draw_line(-37, 38);
-	delay(100);
-	plot.draw_line(23, 48);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.bezier_c(1810, 526, 1802, 542, 1798, 558);
-	delay(100);
-	plot.draw_line(-51, 18);
-	delay(100);
-	plot.draw_line(0, 54);
-	delay(100);
-	plot.draw_line(51, 18);
-	delay(100);
-	plot.bezier_c(1802, 664, 1809, 679, 1818, 693);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.draw_line(-22, 48);
-	delay(100);
-	plot.draw_line(38, 38);
-	delay(100);
-	plot.draw_line(48, -23);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.bezier_c(1895, 765, 1910, 769, 1926, 774);
-	delay(100);
-	plot.draw_line(18, 49);
-
-    up();
-    delay(100);
-    plot.draw_line(-62, -220);
-    down();
-	delay(100);
-	plot.bezier_c(1882, 553, 1922, 513, 1970, 513);
-	delay(100);
-	plot.bezier_c(2019, 513, 2059, 553, 2059, 603);
-	delay(100);
-	plot.bezier_c(2059, 652, 2019, 692, 1970, 692);
-	delay(100);
-	plot.bezier_c(1922, 692, 1882, 652, 1882, 603);
-	delay(100);
-	plot.draw_line(0, 0);
-
-    up();
-    delay(100);
-    plot.draw_line(403, 416);
-    down();
-	delay(100);
-	plot.draw_line(31, -13);
-	delay(100);
-	plot.draw_line(-2, -33);
-	delay(100);
-	plot.bezier_c(2323, 966, 2331, 959, 2337, 950);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.draw_line(33, 2);
-	delay(100);
-	plot.draw_line(13, -31);
-	delay(100);
-	plot.draw_line(-25, -22);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.bezier_c(2360, 888, 2360, 878, 2358, 867);
-	delay(100);
-	plot.draw_line(25, -22);
-	delay(100);
-	plot.draw_line(-13, -31);
-	delay(100);
-	plot.draw_line(-33, 2);
-	delay(100);
-	plot.bezier_c(2331, 807, 2323, 800, 2315, 794);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.draw_line(2, -33);
-	delay(100);
-	plot.draw_line(-31, -13);
-	delay(100);
-	plot.draw_line(-22, 25);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.bezier_c(2253, 771, 2242, 770, 2232, 772);
-	delay(100);
-	plot.draw_line(-22, -25);
-	delay(100);
-	plot.draw_line(-31, 13);
-	delay(100);
-	plot.draw_line(2, 34);
-	delay(100);
-	plot.bezier_c(2171, 800, 2164, 807, 2158, 816);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.draw_line(-33, -2);
-	delay(100);
-	plot.draw_line(-13, 34);
-	delay(100);
-	plot.draw_line(25, 25);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.bezier_c(2135, 880, 2135, 891, 2136, 902);
-	delay(100);
-	plot.draw_line(-25, 21);
-	delay(100);
-	plot.draw_line(13, 30);
-	delay(100);
-	plot.draw_line(33, -2);
-	delay(100);
-	plot.bezier_c(2164, 959, 2172, 966, 2180, 973);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.draw_line(-2, 33);
-	delay(100);
-	plot.draw_line(31, 13);
-	delay(100);
-	plot.draw_line(22, -25);
-	delay(100);
-	plot.draw_line(0, 0);
-	delay(100);
-	plot.bezier_c(2242, 995, 2252, 995, 2263, 994);
-	delay(100);
-	plot.draw_line(22, 25);
-
-    up();
-    delay(100);
-    plot.draw_line(-90, -114);
-    down();
-	delay(100);
-	plot.bezier_c(2184, 876, 2197, 843, 2226, 831);
-	delay(100);
-	plot.bezier_c(2255, 819, 2287, 833, 2299, 862);
-	delay(100);
-	plot.bezier_c(2311, 890, 2297, 923, 2269, 935);
-	delay(100);
-	plot.bezier_c(2240, 947, 2207, 933, 2196, 904);
-	delay(100);
-	plot.draw_line(0, 0);
+	plot.draw_line(28, 61);
+	up();
 }
 
 void loop() {}

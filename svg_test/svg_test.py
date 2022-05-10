@@ -39,31 +39,25 @@ void down()
     for (; agl <= 160; ++agl)
     {
     servo.write(agl);
-    delayMicroseconds(1500);
+    delay(15);
     }
 
-    delayMicroseconds(10000);
+    delay(100);
 }
 
 void up()
 {
-    for (; agl >= 130; --agl)
+    for (; agl >= 140; --agl)
     {
     servo.write(agl);
-    delayMicroseconds(1500);
+    delay(15);
     }
 
-    delayMicroseconds(10000);
-}
-
-void print_pos()
-{
-    Serial.print(plot.pos_x()); Serial.print(", "); Serial.println(plot.pos_y());
+    delay(100);
 }
 
 void setup()
 {
-    Serial.begin(9600);
     servo.attach(_SERVO);
 
     up();
@@ -71,7 +65,8 @@ void setup()
     
 """
 
-conc = """}
+conc = """\tup();
+}
 
 void loop() {}"""
 
@@ -90,10 +85,11 @@ cubic_bezier_template = "\tplot.bezier_c(%d, %d, %d, %d, %d, %d);\n"
 
 quadratic_bezier_template = "\tplot.bezier_q(%d, %d, %d, %d);\n"
 
-
 print("\nConverting to path")
-system('inkscape -g --verb="EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;ObjectRemoveTransform;EditSelectAll;SelectionGroup" --batch-process --export-text-to-path --export-plain-svg --export-filename={}\\out.svg '.format(getcwd()) + getcwd() + "\\" + pa)
+system('inkscape -g --verb="EditSelectAll;SelectionGroup;EditSelectAll;ObjectFlipHorizontally;" --batch-process --export-text-to-path --export-plain-svg --export-filename={}\\intermediary.svg '.format(getcwd()) + getcwd() + "\\" + pa)
+system('inkscape -g --verb="EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;ObjectRemoveTransform;" --batch-process --export-plain-svg --export-filename={}\\out.svg '.format(getcwd()) + getcwd() + "\\intermediary.svg")
 print("Done converting\n")
+
 #sleep(1)
 print("Fetching path")
 # read the SVG file
