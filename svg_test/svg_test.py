@@ -26,7 +26,7 @@ SCALING = s
 
 del s
 
-init = """#include <PlotterV4.h>
+init = """#include <PlotterV5.h>
 #include <Servo.h>
 
 Plt plot = Plt();
@@ -90,12 +90,12 @@ system('inkscape -g --verb="EditSelectAll;SelectionGroup;EditSelectAll;ObjectFli
 system('inkscape -g --verb="EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;SelectionUnGroup;EditSelectAll;ObjectRemoveTransform;" --batch-process --export-plain-svg --export-filename={}\\out.svg '.format(getcwd()) + getcwd() + "\\intermediary.svg")
 print("Done converting\n")
 
-#sleep(1)
+sleep(1)
 print("Fetching path")
 # read the SVG file
 doc = minidom.parse(getcwd() + "\\out.svg")
 
-#sleep(0.4)
+sleep(0.4)
 print("Trying with <path>")
 path_strings = [path.getAttribute('d') for path
                 in doc.getElementsByTagName('path')] #try getting it by the path tag
@@ -123,7 +123,7 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
     ino.write(init) #initialise the file
     
     print("Generating code")
-    #sleep(0.8)
+    sleep(0.8)
 
     for path_string in path_strings:
         p = parse_path(path_string) #parser go brrrr
@@ -168,3 +168,5 @@ with open(getcwd() + "\\" + "generated_ino.ino", "w") as ino:
     ino.write(conc) #finalise the file
 
 print("\nConversion complete, .ino file can be found here: {}".format(getcwd() + "\\" + "generated_ino.ino"))
+
+sleep(10)
