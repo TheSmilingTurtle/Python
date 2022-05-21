@@ -1,0 +1,1 @@
+[print(i)for i in range(2,10000)if sum(i%j==0for j in range(2,i))==0]
