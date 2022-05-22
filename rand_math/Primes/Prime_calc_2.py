@@ -36,6 +36,8 @@ def run():
     return primes_list
 
 def printer():
+    if num <= 100:
+        print(primes_list)
     print("\nThere are {} prime numbers".format(len(primes_list)))
     print("The last prime is".format(num), primes_list[-1])
     print("This took {}ms".format(duration))

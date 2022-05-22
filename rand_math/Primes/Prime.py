@@ -4,7 +4,7 @@ import time
 plist = [2]
 
 try:
-    num = int(input(">>>"))
+    num = int(input("Enter a number: "))
 except:
     print("Thats not an int")
 
@@ -23,7 +23,8 @@ def run(t):
             plist.append(i)
 
 def printer():
-    print(plist)
+    if num <= 100:
+        print(plist)
     print("There are", len(plist), "prime numbers")
     print("It took", elapsed/(10**6), "ms")
 
