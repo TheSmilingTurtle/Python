@@ -7,7 +7,7 @@ rps_wait = True
 
 rps_vals = ["rock", "paper", "scissors"]
 
-TOKEN = "NjM0NDUxMTUzODkxMDk4NjQ5.XsuMfw.Q64zqERHBbnXyzJZPGJ9MC3HH_A"
+TOKEN = input("Enter Token: ") #can be found at https://discord.com/developers/applications/
 
 client = discord.Client()
 
