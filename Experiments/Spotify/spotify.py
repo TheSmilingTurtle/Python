@@ -19,8 +19,9 @@ html = """
     </div>
 </body>"""
 
-client_id = "01cbf6272b014997b6d2fa234b7c788e"
-client_secret = "ac1498c3cd354058bada1f4cf65488f3"
+with open("client_creds.txt") as file:
+    client_id = file.readlines[0]
+    client_secret = file.readlines[1]
 
 auth_manager = spotipy.SpotifyOAuth(scope="user-read-currently-playing", client_id=client_id, client_secret=client_secret, redirect_uri="https://localhost:8080")
 sp = spotipy.Spotify(auth_manager=auth_manager)
