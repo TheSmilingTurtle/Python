@@ -6,6 +6,10 @@ import requests
 
 TOKEN = input("Enter Token: ") #can be found at https://discord.com/developers/applications/
 
+if TOKEN == "":
+    with open("token.txt", "r") as file:
+        TOKEN = file.read()
+
 client = discord.Client()
 
 @client.event
