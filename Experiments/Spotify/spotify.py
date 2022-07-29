@@ -1,6 +1,8 @@
 import time
 import spotipy
 
+#Hacky solution to make a spotify currently playing bot for twitch studio
+
 html = """
 <!DOCTYPE html>
 <head>
