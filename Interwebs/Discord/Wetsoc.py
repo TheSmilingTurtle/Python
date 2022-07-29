@@ -4,6 +4,8 @@ from PIL import Image
 import random
 import requests
 
+#A very mean discord bot with near to no functionality
+
 TOKEN = input("Enter Token: ") #can be found at https://discord.com/developers/applications/
 
 if TOKEN == "":
