@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
 #series definitions
 iterations = 80
@@ -90,7 +91,7 @@ def fractal(horizontal_precision, top_left, bottom_right, round_val):
     #image array definitions
     out_array = np.zeros([vertical_precision, horizontal_precision], dtype=np.uint8)
 
-    for i in range(vertical_precision):
+    for i in tqdm(range(vertical_precision)):
         #imaginary component of lambda for each row of the matrix
         lamb_imaginary = max_imag_lamb - vertical_step_length*i
 

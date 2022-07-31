@@ -19,10 +19,9 @@ class bezier:
     
     @property
     def get_types(self):
-        match self.type:
-            case "c":
-                self.types = [self.path_type.CURVE3 for _ in self.points]
-                self.types[0] = self.path_type.MOVETO
+        if self.type == "c":
+            self.types = [self.path_type.CURVE3 for _ in self.points]
+            self.types[0] = self.path_type.MOVETO
 
         return self.types
     
