@@ -26,7 +26,7 @@ def getcomplex(x: int, y: int) -> complex:
 
 for x in tqdm(range(SIZE_X)):
     for y in range(SIZE_Y):
-        z = 0.2
+        z = 0.5
         c = getcomplex(x,y)
         for i in range(50):
             z = func(z,c)
@@ -36,16 +36,4 @@ for x in tqdm(range(SIZE_X)):
         else:
             pixel[x,y] = (0,0,0)
 
-for x in tqdm(range(SIZE_X)):
-    for y in range(SIZE_Y):
-        z = 0.2
-        c = getcomplex(x,y)
-        for i in range(50):
-            z = func(z,c)
-            if abs(z)>100:
-                pixel[x,y] = colour(i)
-                break
-        else:
-            pixel[x,y] = (0,0,0)
-
-img.save("/home/thesmilingturtle/coding/Python//Graphing/fractal/test.png")
+img.save("/home/thesmilingturtle/Coding/Python//Graphing/fractal/test.png")

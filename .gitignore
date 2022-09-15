@@ -131,6 +131,9 @@ dmypy.json
 # VSCode
 .vscode/
 
-#possibly important credentials
+# Possibly important credentials
 client_creds.txt
 token.txt
+
+# Folders
+nltk_data/
