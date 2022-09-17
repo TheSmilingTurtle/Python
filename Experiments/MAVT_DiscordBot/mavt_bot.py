@@ -1,7 +1,7 @@
 import discord 
 import pprint
 
-TOKEN = ""
+TOKEN = "MTAxOTg5OTIwMjg3ODMyODg0Mw.GndPQo.VdaNphhyMCSBxWUjPEUCXrveI7jJBmwX5-aNV4"
 
 client = discord.Client()
 
