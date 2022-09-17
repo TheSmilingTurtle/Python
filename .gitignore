@@ -134,6 +134,7 @@ dmypy.json
 # Possibly important credentials
 client_creds.txt
 token.txt
+mavt_bot.py
 
 # Folders
 nltk_data/
