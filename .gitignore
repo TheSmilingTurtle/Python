@@ -127,6 +127,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Code Expert
+code_expert/
 
 # VSCode
 .vscode/
