@@ -17,7 +17,6 @@ train_tensor = tf.convert_to_tensor(train)
 
 train_ds = tf.data.Dataset.from_tensor_slices(train_tensor).batch(32)
 
-
 class Compressor(Model):
     def __init__(self):
         super(Compressor, self).__init__()
