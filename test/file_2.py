@@ -1,8 +1,7 @@
-#from rich import print
-from rich.progress import track
-from rich.traceback import install
-install(show_locals=True)
+def jank(string, depth=0):
+    if depth <= 0:
+        return string
+    n = jank(string, depth-1)
+    return string + "^{" + n + "}_{" + n + "}"
 
-from numba import njit, prange
-
-print(16000000//73000//2-1)
+print( jank("jank", depth=9) )
