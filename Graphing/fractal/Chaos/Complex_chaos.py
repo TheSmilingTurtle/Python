@@ -49,13 +49,13 @@ def counter(l):
 
     for i in l:                     #iterates over the list
         if i not in used:
-            count += 1              
+            count += 1
             used.add(i)             #stores already seen values in a set
-    
+
     return count
 
 def chaos(index, round, lamb):
-    '''Calculates the remaining series calculations, 
+    '''Calculates the remaining series calculations,
     stores them in a list and returns counter() of the list'''
 
     series_list = [element(index, lamb)]
@@ -63,11 +63,11 @@ def chaos(index, round, lamb):
     for k in range(end_values):
             n = series_list[k]                  #previous element of the series
             series_list.append(series(n, lamb))
-    
+
     return counter([complex_round(i, round) for i in series_list])
 
 def fractal(horizontal_precision, top_left, bottom_right, round_val):
-    
+
     #calculating the positioning
     min_imag_lamb = bottom_right.imag
     max_imag_lamb = top_left.imag
@@ -101,7 +101,7 @@ def fractal(horizontal_precision, top_left, bottom_right, round_val):
 
             #feed the image
             out_array[i, j] = chaos(starting_element_index, round_val, lamb)
-    
+
     return out_array
 
 im_array = fractal(precision, top_left_corner, bottom_right_corner, round_num)

@@ -1,0 +1,8 @@
+numpy
+torch
+torchvision
+torchsummary
+pyAv
+rich
+matplotlib
+tqdm
