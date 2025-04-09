@@ -12,7 +12,7 @@ from rich import print
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
-from matplotlib.patches import Circle
+from matplotlib.patches import Circle, Arrow
 
 class Drone:
     def __init__(self, pos, width):
@@ -160,33 +160,30 @@ def simulate():
         
 
 def plot(frame):
+    ax.clear()
+    ax.set_xlim(0,10)
+    ax.set_ylim(0,10)
+
+    for tree in Trees:
+        ax.add_patch(Circle(tuple(tree.pos), tree.width, color='red'))
+
+    for goal in Goals:
+        ax.add_patch(Circle(tuple(goal.pos), goal.width, color='green'))
+
     for i, drone in enumerate(Drones):
-        drone_circles[i].set(center=tuple(drone.pos))
-    
-    return drone_circles
+        ax.add_patch(Circle(tuple(drone.pos), drone.width, color='blue'))
+        ax.arrow(drone.pos[0], drone.pos[1], drone.velocity[0]*0.1, drone.velocity[1]*0.1, head_width=0.1, head_length=0.1, color='orange')
 
 sim = threading.Thread(target=simulate)
 sim.daemon = True
 
 fig, ax = plt.subplots(1,1)
 
-ax.set_xlim(0,10)
-ax.set_ylim(0,10)
-
-drone_circles = [Circle(tuple(drone.pos), drone.width) for drone in Drones]
-
-tree_circles = [Circle(tree.pos, tree.width) for tree in Trees]
-
-for tree in tree_circles:
-    fig.add_artist(tree)
-
-for drone in drone_circles:
-    fig.add_artist(drone)
-
-a = ani.FuncAnimation(fig, plot)
+a = ani.FuncAnimation(fig, plot, interval=100)
 
 input("Enter to start sim")
 
+plt.show()
+
 sim.start()
 
-plt.show()
