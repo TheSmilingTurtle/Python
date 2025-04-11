@@ -35,6 +35,9 @@ class Drone:
         self.danger_y = np.array([[]])
 
     def refit(self):
+        self.goal_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed"))
+        self.danger_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed"))
+
         self.goal_gpr.fit(self.goal_X, self.goal_y)
         self.danger_gpr.fit(self.danger_X, self.danger_y)
 
@@ -44,13 +47,13 @@ class Drone:
     def plan(self):
         self.refit()
 
-        stepmon = VerboseMonitor(1)
+        #stepmon = VerboseMonitor(1)
 
-        solution = diffev2(self.opt_function,self.initial_guess, maxiter=20,bounds=self.bounds, disp=True, constraints=self.model_constraint, itermon=stepmon, tightrange=True)
+        solution = diffev2(self.opt_function,self.initial_guess, maxiter=20,bounds=self.bounds, disp=True, constraints=self.model_constraint, tightrange=True)
 
         self.velocity = np.array([solution[2*self.steps], solution[2*self.steps+1]])
 
-        print(list(zip(solution, self.bounds)))
+        #print(list(zip(solution, self.bounds)))
 
         self.initial_guess[0:2*self.steps-2] = solution[2:2*self.steps] # MPC style shifting
         self.initial_guess[2*self.steps:-2] = solution[2*self.steps+2:]
@@ -61,7 +64,7 @@ class Drone:
     def opt_function(self, x):
         objective = 0 #+ 0.01*sum(x[i]**2 + x[i+1]**2 for i in range(2*self.steps,4*self.steps-2, 2))
         objective += sum(self.danger_gpr.predict([(x[i], x[i+1])])[0] for i in range(0,2*self.steps-2, 2))
-        objective -= sum((ret := self.goal_gpr.predict([(x[i], x[i+1])], return_std=True))[0] + ret[1] for i in range(0,2*self.steps-2, 2))
+        objective -= sum((ret := self.goal_gpr.predict([(x[i], x[i+1])], return_std=True))[0] + 2*ret[1] for i in range(0,2*self.steps-2, 2))
         #this is awful pls rewrite
 
         return objective
@@ -80,7 +83,11 @@ class Drone:
         return x
 
     def communicate(self, drones, measurements):
-        pos = self.pos.reshape(1,-1) + self.velocity.reshape(1,-1)
+        pos = self.pos.reshape(1,-1) + dt*self.velocity.reshape(1,-1)
+
+        print(measurements)
+        print(pos)
+        print()
 
         if self.danger_X.size == 0:
             self.danger_X = pos
@@ -114,7 +121,7 @@ class Tree:
         self.width = width
         self.noise = noise
     
-    def sdf(self, drone):
+    def sdf(self, drone): # this might be causing instability
         return np.max(np.linalg.norm(drone.pos + dt*drone.velocity - self.pos) - self.width - drone.width, 0)
 
     def noisy_sdf(self, drone):
@@ -126,8 +133,8 @@ class Goal:
         self.width = width
         self.noise = noise
     
-    def sdf(self, drone):
-        return np.max(np.linalg.norm(drone.pos + dt*drone.velocity - self.pos) - self.width - drone.width, 0)
+    def sdf(self, drone): # this might be causing instability
+        return np.max(np.linalg.norm(self.pos - drone.pos + dt*dthis might be causing instabilityrone.velocity) - self.width - drone.width, 0)
 
     def noisy_sdf(self, drone):
         return self.sdf(drone) + np.random.normal(0,self.noise)
@@ -173,16 +180,38 @@ def plot():
 
     simulate()
 
-    for i, drone in enumerate(Drones):
-        z_danger = drone.danger_gpr.predict(points).reshape(x.shape)
-        z_goal = drone.goal_gpr.predict(points, return_std=True)
+    # for i, drone in enumerate(Drones):
+    #     z_danger = drone.danger_gpr.predict(points).reshape(x.shape)
+    #     z_goal = drone.goal_gpr.predict(points, return_std=True)
 
-        axs[i].clear()
+    #     axs[i].clear()
 
-        axs[i].contourf(x, y, z_danger - z_goal[0].reshape(x.shape) - z_goal[1].reshape(x.shape), alpha=0.5, cmap='Reds')
-        #axs[i].contourf(x, y, z_danger, alpha=0.5, cmap='Reds')
-        #axs[i].contourf(x, y, z_goal[0].reshape(x.shape), alpha=0.5, cmap='Greens')
-        axs[i].set_title(f'Drone {i+1}')
+    #     axs[i].contourf(x, y, z_danger - z_goal[0].reshape(x.shape) - z_goal[1].reshape(x.shape), alpha=0.5, cmap='Reds')
+    #     #axs[i].contourf(x, y, z_danger, alpha=0.5, cmap='Reds')
+    #     #axs[i].contourf(x, y, z_goal[0].reshape(x.shape), alpha=0.5, cmap='Greens')
+    #     axs[i].set_title(f'Drone {i+1}')
+
+    z_danger = Drones[0].danger_gpr.predict(points).reshape(x.shape)
+    z_goal = Drones[0].goal_gpr.predict(points, return_std=True)
+
+    axs[0].clear()
+    axs[1].clear()
+    axs[2].clear()
+
+    axs[0].contourf(x, y, z_danger - z_goal[0].reshape(x.shape) - 2*z_goal[1].reshape(x.shape), alpha=0.5, cmap='Blues')
+    axs[1].contourf(x, y, z_danger, alpha=0.5, cmap='Reds')
+    axs[2].contourf(x, y, z_goal[0].reshape(x.shape), alpha=0.5, cmap='Greens')
+
+
+    axs[1].scatter(Drones[0].danger_X[:,0], Drones[0].danger_X[:,1], c=Drones[0].danger_y, alpha=1, cmap='Reds')
+    axs[2].scatter(Drones[0].goal_X[:,0], Drones[0].goal_X[:,1], c=Drones[0].goal_y, alpha=1, cmap='Greens')
+
+    axs[0].set_xlim(*BOUNDS[0])
+    axs[0].set_ylim(*BOUNDS[1])
+    axs[1].set_xlim(*BOUNDS[0])
+    axs[1].set_ylim(*BOUNDS[1])
+    axs[2].set_xlim(*BOUNDS[0])
+    axs[2].set_ylim(*BOUNDS[1])
 
     axs[-1].clear()
     axs[-1].set_xlim(*BOUNDS[0])
@@ -196,7 +225,7 @@ def plot():
 
     for i, drone in enumerate(Drones):
         axs[-1].add_patch(Circle(tuple(drone.pos), drone.width, color='blue'))
-        axs[-1].arrow(drone.pos[0], drone.pos[1], drone.velocity[0]*0.1, drone.velocity[1]*0.1, head_width=0.1, head_length=0.1, color='orange')
+        axs[-1].arrow(drone.pos[0]-drone.velocity[0]*dt, drone.pos[1]-drone.velocity[1]*dt, drone.velocity[0]*dt, drone.velocity[1]*dt, head_width=0.1, head_length=0.1, color='orange')
 
     plt.draw()
     plt.pause(0.01)
@@ -205,8 +234,8 @@ sim = threading.Thread(target=loop)
 sim.daemon = True
 
 
-fig, axs = plt.subplots(1, len(Drones)+1, figsize=(20, 5))
-
+fig, axs = plt.subplots(1, 4, figsize=(40, 10))
+#                          len(Drones) +1
 #sim.start()
 
 while True:
