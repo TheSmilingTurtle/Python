@@ -6,7 +6,7 @@ from mystic.solvers import diffev2
 from mystic.monitors import VerboseMonitor
 
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel
 
 from rich import print
 
@@ -25,8 +25,8 @@ class Drone:
         self.initial_guess = list(self.pos)*self.steps + list(1-2*np.random.random(2*self.steps - 2))
         self.bounds = [BOUNDS[0], BOUNDS[1]]*self.steps + [(-MAX_SPEED, MAX_SPEED)]*(2*self.steps-2)
 
-        self.goal_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed"))
-        self.danger_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed"))
+        self.goal_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed") + WhiteKernel())
+        self.danger_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed") + WhiteKernel())
 
         self.goal_X = np.array([[]])
         self.goal_y = np.array([[]])
@@ -35,9 +35,6 @@ class Drone:
         self.danger_y = np.array([[]])
 
     def refit(self):
-        self.goal_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed"))
-        self.danger_gpr = GaussianProcessRegressor(kernel=RBF(length_scale=1, length_scale_bounds="fixed"))
-
         self.goal_gpr.fit(self.goal_X, self.goal_y)
         self.danger_gpr.fit(self.danger_X, self.danger_y)
 
@@ -62,14 +59,14 @@ class Drone:
         self.initial_guess[-2:] = solution[-2:]
     
     def opt_function(self, x):
-        objective = 0 #+ 0.01*sum(x[i]**2 + x[i+1]**2 for i in range(2*self.steps,4*self.steps-2, 2))
-        objective += sum(self.danger_gpr.predict([(x[i], x[i+1])])[0] for i in range(0,2*self.steps-2, 2))
-        objective -= sum((ret := self.goal_gpr.predict([(x[i], x[i+1])], return_std=True))[0] + 2*ret[1] for i in range(0,2*self.steps-2, 2))
+        objective = 0 - 0.01*sum(x[i]**2 + x[i+1]**2 for i in range(2*self.steps,4*self.steps-2, 2))
+        objective += sum(-np.log(1-self.danger_gpr.predict([(x[i], x[i+1])])[0]) for i in range(0,2*self.steps-2, 2))
+        objective -= 2*sum((ret := self.goal_gpr.predict([(x[i], x[i+1])], return_std=True))[0] + ret[1] for i in range(0,2*self.steps-2, 2))
         #this is awful pls rewrite
 
         return objective
     
-    def velocity_constraint(self, x):
+    def velocity_constraint(self, x): # unused
         return sum(x[i]**2 + x[i+1]**2 - MAX_SPEED for i in range(2*self.steps,4*self.steps-2, 2))
 
     def model_constraint(self, x):
@@ -162,7 +159,7 @@ def simulate():
 
         tmp = sorted(tmp, key=lambda x: drone.dist(x))
 
-        measurements = {"danger": sum(np.exp(-tree.noisy_sdf(drone)) for tree in Trees), "goal": sum(np.exp(-goal.noisy_sdf(drone)) for goal in Goals)} #compute the danger samples here
+        measurements = {"danger": sum(np.exp(-tree.noisy_sdf(drone)) for tree in Trees)/len(Trees), "goal": sum(np.exp(-goal.noisy_sdf(drone)) for goal in Goals)} #compute the danger samples here
 
         drone.communicate(tmp, measurements)            
     
@@ -198,7 +195,7 @@ def plot():
     axs[1].clear()
     axs[2].clear()
 
-    axs[0].contourf(x, y, z_danger - z_goal[0].reshape(x.shape) - 2*z_goal[1].reshape(x.shape), alpha=0.5, cmap='Blues')
+    axs[0].contourf(x, y, -np.log(1-z_danger) - 2*z_goal[0].reshape(x.shape) - 2*z_goal[1].reshape(x.shape), alpha=0.5, cmap='Blues')
     axs[1].contourf(x, y, z_danger, alpha=0.5, cmap='Reds')
     axs[2].contourf(x, y, z_goal[0].reshape(x.shape), alpha=0.5, cmap='Greens')
 
