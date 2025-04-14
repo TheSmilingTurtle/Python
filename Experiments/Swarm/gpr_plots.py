@@ -122,10 +122,10 @@ class Tree:
         self.noise = noise
     
     def sdf(self, drone): # this might be causing instability
-        return np.max(np.linalg.norm(drone.pos + dt*drone.velocity - self.pos) - self.width - drone.width, 0)
+        return np.max(np.linalg.norm(drone.pos + dt*drone.velocity - self.pos) - self.width - drone.width, 0) # also maybe use  - self.width - drone.width
 
     def noisy_sdf(self, drone):
-        return self.sdf(drone) + np.random.normal(0,self.noise)
+        return self.sdf(drone) #+ np.random.normal(0,self.noise)
 
 class Goal:
     def __init__(self, pos, width, noise):
@@ -134,10 +134,10 @@ class Goal:
         self.noise = noise
     
     def sdf(self, drone): # this might be causing instability
-        return np.max(np.linalg.norm(self.pos - drone.pos + dt*dthis might be causing instabilityrone.velocity) - self.width - drone.width, 0)
+        return np.max(np.linalg.norm(self.pos - drone.pos - dt*drone.velocity), 0) # also maybe use  - self.width - drone.width
 
     def noisy_sdf(self, drone):
-        return self.sdf(drone) + np.random.normal(0,self.noise)
+        return self.sdf(drone) #+ np.random.normal(0,self.noise)
 
 
 BOUNDS = ([0, 10], [0, 10])
