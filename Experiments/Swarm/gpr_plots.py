@@ -199,7 +199,6 @@ def plot():
     axs[1].contourf(x, y, z_danger, alpha=0.5, cmap='Reds')
     axs[2].contourf(x, y, z_goal[0].reshape(x.shape), alpha=0.5, cmap='Greens')
 
-
     axs[1].scatter(Drones[0].danger_X[:,0], Drones[0].danger_X[:,1], c=Drones[0].danger_y, alpha=1, cmap='Reds')
     axs[2].scatter(Drones[0].goal_X[:,0], Drones[0].goal_X[:,1], c=Drones[0].goal_y, alpha=1, cmap='Greens')
 
